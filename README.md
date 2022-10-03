@@ -14,11 +14,11 @@
 Clone this repository locally. In a terminal, run the following command:
 
 ```
-$ git clone https://github.com/IBM/max-image-resolution-enhancer.git
+$ git clone https://github.com/mindadeepam/Geospatial-Clustering
 ```
 
 Change directory into the repository base folder:
 
 ```
-$ cd max-image-resolution-enhancer
+$ cd geospatial-clustering
 ```
