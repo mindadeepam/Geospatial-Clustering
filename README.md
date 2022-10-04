@@ -22,3 +22,9 @@ Change directory into the repository base folder:
 ```
 $ cd geospatial-clustering
 ```
+
+Run bash script:
+
+```
+$ bash run.sh
+```
