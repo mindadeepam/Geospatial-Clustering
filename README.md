@@ -1,4 +1,5 @@
 # Geospatial-Clustering
+Clustering user geo-spatial data and assign new users to observed clusters for location based content recommendation. 
 
 ## Run Locally
 
