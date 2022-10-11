@@ -11,7 +11,7 @@ def preprocess(df, train=False, predict=False):
         df = df.loc[(df.longitude<=98) & (df.longitude>=60)]
         df = df.loc[(df.latitude<=38) & (df.latitude>=8)]
       
-        poi_cols = [ "latitude","longitude", "state", "cityData", "chapterData"]
+        poi_cols = [ "latitude","longitude", "state", "cityData", "chapterData", "engage_time"]
         df = df.groupby(['student_id','question_id']).first()[poi_cols].reset_index()  
 
     if predict==True:
@@ -25,6 +25,10 @@ def top_chapters(self):
     n = 5
     return self.value_counts().head(n).to_dict()
 
+
+def top_et_chapters(self):
+    # self.groupby(["chapterData"]).sum(numeric_only=True)["engage_time"].sort_values(ascending=False).to_dict()
+  return self.groupby("chapterData").sum(numeric_only=True)["engage_time"].sort_values(ascending=False).head(5).to_dict()
 
 def top_city(self):
     self = self.mode()
@@ -55,6 +59,8 @@ def getClusterdf(df, cluster_centers):
     cluster_based_df.cityData = cluster_based_df.cityData.apply(lambda x: x[0] if type(x)!=str else x)
     cluster_based_df.columns = ["city", "top_chapters", "cluster_population"]
 
+    cluster_based_df["et_topchapters"] = df.groupby(["kmeans_cluster"]).apply(top_et_chapters)
+
     ## radius values of clusters
     radius_of_cluster = get_radius_of_clusters(cluster_centers, df)
     radius_in_kms = pd.Series(radius_of_cluster, name="radius_in_kms")
@@ -63,6 +69,8 @@ def getClusterdf(df, cluster_centers):
 
     cluster_based_df["center_lon"] = cluster_centers[:,0]
     cluster_based_df["center_lat"] = cluster_centers[:,1]
+
+
     return cluster_based_df
 
 
@@ -84,10 +92,11 @@ def getClusters(df, cluster_df):
 
 
 
-def trainManager(df,n_clusters, save_model=True):
+def trainManager(df,n_clusters, save_model=True, preprocess=True):
     
-    print("preprocessing starting now..")
-    df = preprocess(df, train=True)
+    if preprocess==True:
+        print("preprocessing starting now..")
+        df = preprocess(df, train=True)
     
     print("training starting now..")
 
@@ -131,7 +140,7 @@ def breakLargeClusters(max_size, cluster_df, df):
             n = int(cluster.cluster_population/max_size)+1
             _, new_clusters = trainManager(df[df.kmeans_cluster==cluster_number], n, save_model=False)
             # print("here", len(new_clusters))
-            new_clusters.reset_index(inplace=True)
+            new_clusters.reset_index(inplace=True) 
             cluster_numbers = [cluster_number] 
 
             print("last", last_cluster_number)
